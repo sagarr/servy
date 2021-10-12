@@ -1,6 +1,8 @@
 defmodule Servy.Handler do
   @moduledoc false
 
+  require Logger
+
   def handle(request) do
     request
     |> parse
@@ -8,6 +10,7 @@ defmodule Servy.Handler do
     |> log
     |> route
     |> track
+    |> emojify
     |> format_response
   end
 
@@ -25,9 +28,26 @@ defmodule Servy.Handler do
     %{conv | path: "/todos"}
   end
 
-  def rewrite_path(conv), do: conv
+  def rewrite_path(%{path: path} = conv) do
+    regex = ~r{\/(?<thing>\w+)\?id=(?<id>\d+)}
+    captures = Regex.named_captures(regex, path)
+    rewrite_path_captures(conv, captures)
+  end
 
-  def log(conv), do: IO.inspect(conv)
+  def rewrite_path_captures(conv, %{"thing" => thing, "id" => id}) do
+    %{conv | path: "/#{thing}/#{id}"}
+  end
+
+  def rewrite_path_captures(conv, nil), do: conv
+
+  def log(conv) do
+    Logger.info(conv)
+    conv
+  end
+
+  def route(%{method: "DELETE"} = conv) do
+    %{conv | status: 204}
+  end
 
   def route(%{method: "GET", path: "/todos"} = conv) do
     %{conv | resp_body: "grocery", status: 200}
@@ -46,11 +66,17 @@ defmodule Servy.Handler do
   end
 
   def track(%{status: 404, path: path} = conv) do
-    IO.puts("warning: #{path} is on the loose!")
+    Logger.warn("warning: #{path} is on the loose!")
     conv
   end
 
   def track(conv), do: conv
+
+  def emojify(%{status: 200} = conv) do
+    %{conv | resp_body: "👍🏼 #{conv.resp_body} 🤖"}
+  end
+
+  def emojify(conv), do: conv
 
   def format_response(conv) do
     """
@@ -65,6 +91,7 @@ defmodule Servy.Handler do
   defp status_reason(code) do
     %{
       200 => "OK",
+      204 => "No Content",
       404 => "Not Found"
     }[code]
   end
@@ -112,6 +139,26 @@ IO.puts(Servy.Handler.handle(request))
 
 request = """
 GET /todo HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+IO.puts(Servy.Handler.handle(request))
+
+request = """
+DELETE /todos/1 HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+IO.puts(Servy.Handler.handle(request))
+
+request = """
+GET /todos?id=1 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
