@@ -45,9 +45,16 @@ defmodule Servy.Handler do
     conv
   end
 
-  def route(%{method: "GET", path: "/about"} = conv) do
+  def route(%{method: "GET", path: "/pages/" <> page} = conv) do
     Path.expand("../../pages", __DIR__)
-    |> Path.join("about.html")
+    |> Path.join("#{page}.html")
+    |> File.read()
+    |> handle_file(conv)
+  end
+
+  def route(%{method: "GET", path: "/todos/new"} = conv) do
+    Path.expand("../../pages", __DIR__)
+    |> Path.join("form.html")
     |> File.read()
     |> handle_file(conv)
   end
@@ -187,7 +194,27 @@ Accept: */*
 IO.puts(Servy.Handler.handle(request))
 
 request = """
-GET /about HTTP/1.1
+GET /pages/about HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+IO.puts(Servy.Handler.handle(request))
+
+request = """
+GET /pages/contact HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+IO.puts(Servy.Handler.handle(request))
+
+request = """
+GET /todos/new HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
