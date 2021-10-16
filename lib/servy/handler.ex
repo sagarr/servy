@@ -1,51 +1,22 @@
 defmodule Servy.Handler do
   @moduledoc "Handles HTTP requests"
 
-  require Logger
+  import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
+  import Servy.Parser
+  import Servy.FileHandler
 
-  @pages_path Path.expand("../../pages", __DIR__)
+  @pages_path Path.expand("pages", File.cwd!())
 
   @doc "Handle incoming http request and generates response"
   def handle(request) do
     request
     |> parse
-    |> rewrite_path
-    |> log
+    |> rewrite_path()
+    |> log()
     |> route
     |> track
     |> emojify
     |> format_response
-  end
-
-  def parse(request) do
-    [method, path, _] =
-      request
-      |> String.split("\n")
-      |> List.first()
-      |> String.split(" ")
-
-    %{method: method, path: path, resp_body: "", status: nil}
-  end
-
-  def rewrite_path(%{path: "/todo"} = conv) do
-    %{conv | path: "/todos"}
-  end
-
-  def rewrite_path(%{path: path} = conv) do
-    regex = ~r{\/(?<thing>\w+)\?id=(?<id>\d+)}
-    captures = Regex.named_captures(regex, path)
-    rewrite_path_captures(conv, captures)
-  end
-
-  def rewrite_path_captures(conv, %{"thing" => thing, "id" => id}) do
-    %{conv | path: "/#{thing}/#{id}"}
-  end
-
-  def rewrite_path_captures(conv, nil), do: conv
-
-  def log(conv) do
-    Logger.info(conv)
-    conv
   end
 
   def route(%{method: "GET", path: "/pages/" <> page} = conv) do
@@ -81,25 +52,6 @@ defmodule Servy.Handler do
   def route(%{path: path} = conv) do
     %{conv | resp_body: "No #{path} here!", status: 404}
   end
-
-  def handle_file({:ok, content}, conv) do
-    %{conv | status: 200, resp_body: content}
-  end
-
-  def handle_file({:error, :enoent}, conv) do
-    %{conv | status: 404, resp_body: "File not found"}
-  end
-
-  def handle_file({:error, reason}, conv) do
-    %{conv | status: 500, resp_body: "File error: #{reason}"}
-  end
-
-  def track(%{status: 404, path: path} = conv) do
-    Logger.warn("warning: #{path} is on the loose!")
-    conv
-  end
-
-  def track(conv), do: conv
 
   def emojify(%{status: 200} = conv) do
     %{conv | resp_body: "👍🏼 #{conv.resp_body} 🤖"}
