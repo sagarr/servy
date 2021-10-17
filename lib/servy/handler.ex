@@ -65,7 +65,7 @@ defmodule Servy.Handler do
   end
 
   def emojify(%Conv{status: 200} = conv) do
-    %{conv | resp_body: "👍🏼 #{conv.resp_body} 🤖"}
+    %{conv | resp_body: "🤖 #{conv.resp_body} 🤖"}
   end
 
   def emojify(%Conv{} = conv), do: conv
