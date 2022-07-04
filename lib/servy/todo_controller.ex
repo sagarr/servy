@@ -2,10 +2,14 @@ defmodule Servy.TodoController do
 
   alias Servy.Todos
 
+  defp todo_item(t) do
+    "<li>#{t.id}</li><li>#{t.note}</li>"
+  end
+
   def index(conv) do
     todos =
       Todos.list_todos()
-      |> Enum.map(fn (t) -> "<li>#{t.id}</li><li>#{t.note}</li>" end)
+      |> Enum.map(&todo_item/1)
       |> Enum.join
 
     %{conv | resp_body: "<ul>#{todos}</ul>", status: 200}
