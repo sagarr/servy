@@ -1,7 +1,7 @@
 defmodule Servy.Recurse do
   def loopy([head | tail]) do
-    IO.puts("Head: #{head}, Tail: #{IO.inspect(tail)}")
-    loopy([tail])
+    IO.puts("Head: #{head}, Tail: #{inspect(tail)}")
+    loopy(tail)
   end
 
   def loopy([]), do: IO.puts "Done!"
@@ -21,5 +21,6 @@ defmodule Servy.Recurse do
   def triple([], tripled_list), do: tripled_list |> Enum.reverse()
 end
 
+IO.inspect(Servy.Recurse.loopy([1, 2, 3, 4, 5]))
 IO.inspect(Servy.Recurse.sum([1, 2, 3, 4, 5], 0))
 IO.inspect(Servy.Recurse.triple([1, 2, 3, 4, 5], []))
