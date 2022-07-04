@@ -8,6 +8,7 @@ defmodule Servy.Handler do
   @pages_path Path.expand("pages", File.cwd!())
 
   alias Servy.Conv
+  alias Servy.TodoController
 
   @doc "Handle incoming http request and generates response"
   def handle(request) do
@@ -40,20 +41,15 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/todos"} = conv) do
-    %{conv | resp_body: "grocery", status: 200}
+    TodoController.index(conv)
   end
 
   def route(%Conv{method: "GET", path: "/todos/" <> id} = conv) do
-    %{conv | resp_body: "todo #{id}", status: 200}
+    TodoController.show(conv,  Map.put(conv.params, "id", id))
   end
 
   def route(%Conv{method: "POST", path: "/todos"} = conv) do
-    %{
-      conv
-      | resp_body:
-          "Todo created for #{conv.params["note"]} with priority #{conv.params["priority"]}",
-        status: 201
-    }
+    TodoController.create(conv, conv.params)
   end
 
   def route(%Conv{method: "GET", path: "/notes"} = conv) do

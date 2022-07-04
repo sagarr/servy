@@ -1,4 +1,11 @@
 defmodule Servy.Recurse do
+  def loopy([head | tail]) do
+    IO.puts("Head: #{head}, Tail: #{IO.inspect(tail)}")
+    loopy([tail])
+  end
+
+  def loopy([]), do: IO.puts "Done!"
+
   def sum([head | tail], total) do
     total = total + head
     sum(tail, total)
