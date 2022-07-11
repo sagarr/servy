@@ -68,124 +68,115 @@ defmodule Servy.Handler do
 
   def format_response(%Conv{} = conv) do
     """
-    HTTP/1.1 #{Conv.full_status(conv)}
-    Content-Type: text/html
-    Content-Length: #{byte_size(conv.resp_body)}
-
+    HTTP/1.1 #{Conv.full_status(conv)}\r
+    Content-Type: text/html\r
+    Content-Length: #{byte_size(conv.resp_body)}\r
+    \r
     #{conv.resp_body}
     """
   end
 end
 
-request = """
-GET /todos HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
 
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-GET /notes HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-GET /foo HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-GET /todos/1 HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-GET /todo HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-DELETE /todos/1 HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-GET /todos?id=1 HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-GET /pages/about HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-GET /pages/contact HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-GET /todos/new HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-IO.puts(Servy.Handler.handle(request))
-
-request = """
-POST /todos HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-Content-Type: application/x-www-form-urlencoded
-Content-Lenght: 21
-
-note=grocery&priority=medium
-"""
-
-IO.puts(Servy.Handler.handle(request))
+#request = """
+#GET /notes HTTP/1.1
+#Host: example.com
+#User-Agent: ExampleBrowser/1.0
+#Accept: */*
+#
+#"""
+#
+#IO.puts(Servy.Handler.handle(request))
+#
+#request = """
+#GET /foo HTTP/1.1
+#Host: example.com
+#User-Agent: ExampleBrowser/1.0
+#Accept: */*
+#
+#"""
+#
+#IO.puts(Servy.Handler.handle(request))
+#
+#request = """
+#GET /todos/1 HTTP/1.1
+#Host: example.com
+#User-Agent: ExampleBrowser/1.0
+#Accept: */*
+#
+#"""
+#
+#IO.puts(Servy.Handler.handle(request))
+#
+#request = """
+#GET /todo HTTP/1.1
+#Host: example.com
+#User-Agent: ExampleBrowser/1.0
+#Accept: */*
+#
+#"""
+#
+#IO.puts(Servy.Handler.handle(request))
+#
+#request = """
+#DELETE /todos/1 HTTP/1.1
+#Host: example.com
+#User-Agent: ExampleBrowser/1.0
+#Accept: */*
+#
+#"""
+#
+#IO.puts(Servy.Handler.handle(request))
+#
+#request = """
+#GET /todos?id=1 HTTP/1.1
+#Host: example.com
+#User-Agent: ExampleBrowser/1.0
+#Accept: */*
+#
+#"""
+#
+#IO.puts(Servy.Handler.handle(request))
+#
+#request = """
+#GET /pages/about HTTP/1.1
+#Host: example.com
+#User-Agent: ExampleBrowser/1.0
+#Accept: */*
+#
+#"""
+#
+#IO.puts(Servy.Handler.handle(request))
+#
+#request = """
+#GET /pages/contact HTTP/1.1
+#Host: example.com
+#User-Agent: ExampleBrowser/1.0
+#Accept: */*
+#
+#"""
+#
+#IO.puts(Servy.Handler.handle(request))
+#
+#request = """
+#GET /todos/new HTTP/1.1
+#Host: example.com
+#User-Agent: ExampleBrowser/1.0
+#Accept: */*
+#
+#"""
+#
+#IO.puts(Servy.Handler.handle(request))
+#
+#request = """
+#POST /todos HTTP/1.1
+#Host: example.com
+#User-Agent: ExampleBrowser/1.0
+#Accept: */*
+#Content-Type: application/x-www-form-urlencoded
+#Content-Lenght: 21
+#
+#note=grocery&priority=medium
+#"""
+#
+#IO.puts(Servy.Handler.handle(request))

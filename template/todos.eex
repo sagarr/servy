@@ -1,0 +1,7 @@
+Todos
+
+<ul>
+  <%= for todo <- todos do %>
+    <li><%= todo.id %></li><li><%= todo.note %></li>
+  <% end %>
+</ul>

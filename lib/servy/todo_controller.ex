@@ -2,17 +2,21 @@ defmodule Servy.TodoController do
 
   alias Servy.Todos
 
+  @template_path Path.expand("template", File.cwd!())
+
   defp todo_item(t) do
     "<li>#{t.id}</li><li>#{t.note}</li>"
   end
 
   def index(conv) do
-    todos =
-      Todos.list_todos()
-      |> Enum.map(&todo_item/1)
-      |> Enum.join
+    todos = Todos.list_todos()
 
-    %{conv | resp_body: "<ul>#{todos}</ul>", status: 200}
+    content =
+      @template_path
+      |> Path.join("todos.eex")
+      |> EEx.eval_file(todos: todos)
+
+    %{conv | resp_body: content, status: 200}
   end
 
   def show(conv, %{"id" => id}) do
