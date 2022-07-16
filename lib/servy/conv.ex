@@ -4,7 +4,8 @@ defmodule Servy.Conv do
             headers: %{},
             params: %{},
             resp_body: "",
-            status: nil
+            status: nil,
+            resp_headers: %{"Content-Type" => "text/html"}
 
   def full_status(conv) do
     "#{conv.status} #{status_reason(conv.status)}"
@@ -13,6 +14,7 @@ defmodule Servy.Conv do
   defp status_reason(code) do
     %{
       200 => "OK",
+      201 => "Created",
       204 => "No Content",
       404 => "Not Found"
     }[code]

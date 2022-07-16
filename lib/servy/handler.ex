@@ -40,6 +40,10 @@ defmodule Servy.Handler do
     %{conv | status: 204}
   end
 
+  def route(%Conv{method: "GET", path: "/api/todos"} = conv) do
+    Servy.Api.TodoController.index(conv)
+  end
+
   def route(%Conv{method: "GET", path: "/todos"} = conv) do
     TodoController.index(conv)
   end
@@ -50,6 +54,10 @@ defmodule Servy.Handler do
 
   def route(%Conv{method: "POST", path: "/todos"} = conv) do
     TodoController.create(conv, conv.params)
+  end
+
+  def route(%Conv{method: "POST", path: "/api/todos"} = conv) do
+    Servy.Api.TodoController.create(conv, conv.params)
   end
 
   def route(%Conv{method: "GET", path: "/notes"} = conv) do
@@ -69,7 +77,7 @@ defmodule Servy.Handler do
   def format_response(%Conv{} = conv) do
     """
     HTTP/1.1 #{Conv.full_status(conv)}\r
-    Content-Type: text/html\r
+    Content-Type: #{conv.resp_headers["Content-Type"]}\r
     Content-Length: #{byte_size(conv.resp_body)}\r
     \r
     #{conv.resp_body}

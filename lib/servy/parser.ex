@@ -37,5 +37,9 @@ defmodule Servy.Parser do
     body |> String.trim() |> URI.decode_query()
   end
 
+  def parse_params("application/json", body) do
+    body |> Jason.decode!
+  end
+
   def parse_params(_, _), do: %{}
 end
