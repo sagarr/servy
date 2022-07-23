@@ -22,6 +22,16 @@ defmodule Servy.Handler do
     |> format_response
   end
 
+  def route(%Conv{method: "GET", path: "/kaboom"} = conv) do
+    raise "kaboom!"
+  end
+
+  def route(%Conv{method: "GET", path: "/sleep/" <> time} = conv) do
+   time |> String.to_integer |> :timer.sleep
+
+   %{conv | status: 200, resp_body: "Awake!"}
+  end
+
   def route(%Conv{method: "GET", path: "/pages/" <> page} = conv) do
     @pages_path
     |> Path.join("#{page}.html")

@@ -18,9 +18,10 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/.vscode" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/jason" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/jason" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Elixir 1.12.3-otp-24" jdkType="Elixir SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="jason" level="project" />
+    <orderEntry type="library" exported="" name="jason" level="project" />
   </component>
 </module>
