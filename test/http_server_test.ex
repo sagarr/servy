@@ -7,23 +7,20 @@ defmodule HttpServerTest do
   test "accept request and sends back response" do
     spawn(HttpServer, :start, [8000])
 
-    request = """
-    GET /todos/1 HTTP/1.1\r
-    Host: example.com\r
-    User-Agent: ExampleBrowser/1.0\r
-    Accept: */*\r
-    \r
-    """
+    parent = self()
 
-    response = HttpClient.send_request(request)
+    for i <- 0..5 do
+      spawn(fn ->
+        {:ok, response} = HTTPoison.get("http://localhost:8000/todos/1")
+        send(parent, response)
+      end)
+    end
 
-    assert response == """
-           HTTP/1.1 200 OK\r
-           Content-Type: text/html\r
-           Content-Length: 18\r
-           \r
-           🤖 todo foo 🤖
-           """
+    for _ <- 0..5 do
+      receive do
+        response ->
+          assert 200 = response.status_code
+      end
+    end
   end
-
 end
