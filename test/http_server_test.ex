@@ -7,20 +7,14 @@ defmodule HttpServerTest do
   test "accept request and sends back response" do
     spawn(HttpServer, :start, [8000])
 
-    parent = self()
 
-    for i <- 0..5 do
-      spawn(fn ->
-        {:ok, response} = HTTPoison.get("http://localhost:8000/todos/1")
-        send(parent, response)
-      end)
-    end
+    1..5
+    |> Enum.map(fn _ -> Task.async(fn -> HTTPoison.get("http://localhost:8000/todos/1") end) end)
+    |> Enum.map(&Task.await/1)
+    |> Enum.each(&assert_response/1)
+  end
 
-    for _ <- 0..5 do
-      receive do
-        response ->
-          assert 200 = response.status_code
-      end
-    end
+  defp assert_response({:ok, response}) do
+    assert response.status_code == 200
   end
 end
