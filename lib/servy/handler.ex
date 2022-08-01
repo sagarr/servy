@@ -10,6 +10,7 @@ defmodule Servy.Handler do
   alias Servy.Conv
   alias Servy.TodoController
   alias Servy.VideoCam
+  alias Servy.Fetcher
 
   @doc "Handle incoming http request and generates response"
   def handle(request) do
@@ -23,25 +24,16 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def route(%Conv{ method: "GET", path: "/snapshots" } = conv) do
-    parent = self()
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-1")}) end)
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-2")}) end)
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-3")}) end)
+  def route(%Conv{ method: "GET", path: "/sensors" } = conv) do
+    pid4 = Fetcher.async(fn -> Servy.Tracker.get_location("bigfoot") end)
 
-    snapshot1 = receive do
-      {:result, filename} -> filename
-    end
-    snapshot2 = receive do
-      {:result, filename} -> filename
-    end
-    snapshot3 = receive do
-      {:result, filename} -> filename
-    end
+    snapshots = ["cam-1", "cam-2", "cam-3"]
+           |> Enum.map(&Fetcher.async(fn -> VideoCam.get_snapshot(&1) end))
+           |> Enum.map(&Fetcher.get_result(&1))
 
-    snapshots = [snapshot1, snapshot2, snapshot3]
+    location = Fetcher.get_result(pid4)
 
-    %{ conv | status: 200, resp_body: inspect snapshots}
+    %{ conv | status: 200, resp_body: inspect {snapshots, location}}
   end
 
   def route(%Conv{method: "GET", path: "/kaboom"} = conv) do
